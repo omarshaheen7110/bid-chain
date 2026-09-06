@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Request a Quote — BID-CHAIN</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="logo"><span class="mark">◆</span> BID-CHAIN</div>
+  <nav>
+    <a href="https://bid-chain.com/">Home</a>
+    <a href="https://bid-chain.com/capabilities">Capabilities</a>
+    <a href="https://bid-chain.com/how-it-works">Process</a>
+    <a href="quote.html" class="active">Request Quote</a>
+  </nav>
+</header>
+
+<div class="session-bar" id="sessionBar" style="display:none;">
+  <span id="sessionEmail"></span>
+  <button class="logout-btn" id="logoutBtn">Log out</button>
+</div>
+
+<div class="page-shell">
+
+  <div class="page-eyebrow">Procurement Desk</div>
+  <h1>Request a fabrication quote</h1>
+  <p class="lede">Upload a CAD drawing of the part you need. Our system analyzes material yield and tolerances to generate a transparent quote.</p>
+
+  <!-- Shown when logged out -->
+  <div class="auth-gate-note" id="authGateNote" style="display:none;">
+    <span>You need an account to submit a quote request and track its production.</span>
+    <a href="login.html">Log in →</a>
+  </div>
+
+  <div class="alert alert-error" id="formAlert"></div>
+
+  <form id="quoteForm">
+
+    <div class="section-block" id="uploadSection">
+      <h3>Part files</h3>
+
+      <div class="dropzone" id="dropzone">
+        <input type="file" id="fileInput" multiple accept=".dxf,.dwg,.pdf">
+        <div class="dz-icon">⬆</div>
+        <div class="dz-main">Drop files here, or click to browse</div>
+        <div class="dz-sub">Upload a CAD drawing of the product</div>
+        <div class="filetype-chips">
+          <span>DXF</span><span>DWG</span><span>PDF</span>
+        </div>
+      </div>
+
+      <div class="file-list" id="fileList"></div>
+      <div class="field-hint">Max 25 MB per file. At least one drawing file is required.</div>
+    </div>
+
+    <div class="section-block">
+      <h3>Job details</h3>
+
+      <div class="field" id="field-material">
+        <label>Material <span class="req">REQUIRED</span></label>
+        <input type="text" id="material" placeholder="e.g. A36 mild steel, 6mm">
+        <div class="field-error">Tell us what material this part needs.</div>
+      </div>
+
+      <div class="field-row">
+        <div class="field" id="field-quantity">
+          <label>Quantity <span class="req">REQUIRED</span></label>
+          <input type="number" id="quantity" placeholder="1" min="1">
+          <div class="field-error">Enter a quantity of 1 or more.</div>
+        </div>
+        <div class="field" id="field-deadline">
+          <label>Needed by <span class="req">OPTIONAL</span></label>
+          <input type="date" id="deadline">
+        </div>
+      </div>
+
+      <div class="field" id="field-message">
+        <label>Notes <span class="req">OPTIONAL</span></label>
+        <textarea id="message" rows="4" placeholder="Tolerances, finishing, special instructions..."></textarea>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="submitBtn">
+      <span class="spinner"></span>
+      <span class="btn-label">Submit quote request</span>
+    </button>
+
+  </form>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/quote.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account — BID-CHAIN</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="auth-shell">
+
+  <div class="auth-visual">
+    <div class="logo"><span class="mark">◆</span> BID-CHAIN</div>
+    <div class="quote">
+      <div class="eyebrow">Procurement Desk</div>
+      <h2>An account tracks every part, from upload to dispatch.</h2>
+      <p>Register once to submit CAD files, receive quotes, and follow your order through laser cutting, welding, and ISO inspection.</p>
+    </div>
+  </div>
+
+  <div class="auth-form-side">
+    <div class="auth-card">
+      <div class="corner-bl"></div><div class="corner-br"></div>
+      <div class="auth-card-inner">
+
+        <div class="tag">NEW-ACCOUNT</div>
+        <h1>Create your account</h1>
+        <p class="subhead">Set up procurement access for your company.</p>
+
+        <div class="tabs">
+          <a href="login.html">Log In</a>
+          <a href="register.html" class="active">Register</a>
+        </div>
+
+        <div class="alert alert-error" id="formAlert"></div>
+
+        <form id="registerForm" novalidate>
+
+          <div class="field" id="field-name">
+            <label>Full name <span class="req">REQUIRED</span></label>
+            <input type="text" id="name" placeholder="John Doe" autocomplete="name">
+            <div class="field-error">Enter your full name.</div>
+          </div>
+
+          <div class="field" id="field-email">
+            <label>Work email <span class="req">REQUIRED</span></label>
+            <input type="email" id="email" placeholder="name@company.com" autocomplete="email">
+            <div class="field-error">Enter a valid email address.</div>
+          </div>
+
+          <div class="field" id="field-phone">
+            <label>Phone number <span class="req">REQUIRED</span></label>
+            <input type="tel" id="phone" placeholder="+1 (555) 123-4567" autocomplete="tel">
+            <div class="field-error">Enter a valid phone number.</div>
+          </div>
+
+          <div class="field" id="field-company">
+            <label>Company name <span class="req">REQUIRED</span></label>
+            <input type="text" id="company" placeholder="Acme Steel Works" autocomplete="organization">
+            <div class="field-error">Enter your company name.</div>
+          </div>
+
+          <div class="field" id="field-password">
+            <label>Password <span class="req">MIN 8 CHARS</span></label>
+            <input type="password" id="password" placeholder="••••••••" autocomplete="new-password">
+            <div class="pw-strength"><div class="pw-strength-bar" id="pwBar"></div></div>
+            <div class="field-error">Password must be at least 8 characters.</div>
+          </div>
+
+          <div class="field" id="field-confirm">
+            <label>Confirm password <span class="req">REQUIRED</span></label>
+            <input type="password" id="confirmPassword" placeholder="••••••••" autocomplete="new-password">
+            <div class="field-error">Passwords do not match.</div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="submitBtn">
+            <span class="spinner"></span>
+            <span class="btn-label">Create account</span>
+          </button>
+
+        </form>
+
+        <div class="form-footer">
+          Already have an account? <a href="login.html">Log in</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/auth.js"></script>
+<script>
+const form = document.getElementById('registerForm');
+const submitBtn = document.getElementById('submitBtn');
+const formAlert = document.getElementById('formAlert');
+const pwInput = document.getElementById('password');
+const pwBar = document.getElementById('pwBar');
+
+pwInput.addEventListener('input', () => {
+  const val = pwInput.value;
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score++;
+  if (/\d/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const pct = (score / 4) * 100;
+  const colors = ['#e2574c', '#e2574c', '#e0b341', '#4caf7d', '#4caf7d'];
+  pwBar.style.width = pct + '%';
+  pwBar.style.background = colors[score];
+});
+
+function validate() {
+  let valid = true;
+  const fields = {
+    name: document.getElementById('name').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    phone: document.getElementById('phone').value.trim(),
+    company: document.getElementById('company').value.trim(),
+    password: document.getElementById('password').value,
+    confirmPassword: document.getElementById('confirmPassword').value
+  };
+
+  ['name','email','phone','company','password','confirm'].forEach(id => {
+    clearFieldError(document.getElementById('field-' + id));
+  });
+
+  if (fields.name.length < 2) { setFieldError(document.getElementById('field-name'), 'Enter your full name.'); valid = false; }
+  if (!isValidEmail(fields.email)) { setFieldError(document.getElementById('field-email'), 'Enter a valid email address.'); valid = false; }
+  if (!isValidPhone(fields.phone)) { setFieldError(document.getElementById('field-phone'), 'Enter a valid phone number.'); valid = false; }
+  if (fields.company.length < 2) { setFieldError(document.getElementById('field-company'), 'Enter your company name.'); valid = false; }
+  if (fields.password.length < 8) { setFieldError(document.getElementById('field-password'), 'Password must be at least 8 characters.'); valid = false; }
+  if (fields.password !== fields.confirmPassword) { setFieldError(document.getElementById('field-confirm'), 'Passwords do not match.'); valid = false; }
+
+  return { valid, fields };
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  hideAlert(formAlert);
+
+  const { valid, fields } = validate();
+  if (!valid) return;
+
+  setButtonLoading(submitBtn, true);
+
+  const { data, error } = await registerUser({
+    name: fields.name,
+    email: fields.email,
+    phone: fields.phone,
+    company: fields.company,
+    password: fields.password
+  });
+
+  setButtonLoading(submitBtn, false);
+
+  if (error) {
+    showAlert(formAlert, error.message || 'Something went wrong. Please try again.', 'error');
+    return;
+  }
+
+  if (data.session) {
+    // Email confirmation is off — user is logged in immediately
+    window.location.href = 'quote.html';
+  } else {
+    // Email confirmation is on — tell them to check their inbox
+    showAlert(formAlert, 'Account created. Check your email to confirm your address, then log in.', 'success');
+    form.reset();
+    pwBar.style.width = '0%';
+  }
+});
+</script>
+
+</body>
+</html>
