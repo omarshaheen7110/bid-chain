@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Log In — BID-CHAIN</title>
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -30,7 +30,7 @@
 
         <div class="tabs">
           <a href="login.html" class="active">Log In</a>
-          <a href="register.html">Register</a>
+          <a href="index.html">Register</a>
         </div>
 
         <div class="alert alert-error" id="formAlert"></div>
@@ -57,7 +57,7 @@
         </form>
 
         <div class="form-footer">
-          Don't have an account? <a href="register.html">Register</a>
+          Don't have an account? <a href="index.html">Register</a>
         </div>
 
       </div>
@@ -67,8 +67,8 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/supabase-config.js"></script>
-<script src="js/auth.js"></script>
+<script src="supabase-config.js"></script>
+<script src="auth.js"></script>
 <script>
 const form = document.getElementById('loginForm');
 const submitBtn = document.getElementById('submitBtn');
